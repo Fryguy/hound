@@ -1,3 +1,10 @@
+import React from 'react';
+
+import RepoTools from './repo_tools';
+import ReposView from './repos_view';
+
+import $ from 'jquery';
+
 class ReposContainer extends React.Component {
   fetchReposAndOrgs() {
     $.ajax({
@@ -19,7 +26,7 @@ class ReposContainer extends React.Component {
     } else {
       this.setState({repos: data});
 
-      organizations = data.map( repo => {
+      const organizations = data.map( repo => {
         return (repo.owner || {
           name: this.orgName(repo.name)
         });
@@ -294,3 +301,5 @@ class ReposContainer extends React.Component {
     );
   }
 }
+
+module.exports = ReposContainer;
