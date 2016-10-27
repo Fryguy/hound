@@ -20,12 +20,10 @@ feature "Account" do
     expect(page).to have_text("Update Credit Card")
   end
 
-  scenario "user with multiple subscriptions views account page" do
+  scenario "user with a subscription views account page" do
     user = create(:user, stripe_customer_id: "1234")
     subscriptions_response = generate_subscriptions_response([
       individual_subscription_response,
-      private_subscription_response,
-      org_subscription_response,
     ])
     stub_customer_find_request_with_subscriptions(
       user.stripe_customer_id,
@@ -33,29 +31,38 @@ feature "Account" do
     )
     individual_repo = create(:repo, users: [user])
     create(:subscription, repo: individual_repo, user: user, price: 9)
-    private_repo = create(:repo, users: [user])
-    create(:subscription, repo: private_repo, user: user, price: 12)
-    organization_repo = create(:repo, users: [user])
-    create(:subscription, repo: organization_repo, user: user, price: 24)
     public_repo = create(:repo, users: [user])
 
     sign_in_as(user)
     visit account_path
 
-    expect(page).to have_text("$45")
+    expect(page).to have_text("$9")
     expect(page).to have_text("Personal")
-    expect(page).to have_text("Private")
-    expect(page).to have_text("Organization")
-    expect(page).to have_text(private_repo.name)
     expect(page).to have_text(individual_repo.name)
-    expect(page).to have_text(organization_repo.name)
     expect(page).not_to have_text(public_repo.name)
   end
 
-  scenario "user with discounted subscriptions views account page" do
+  scenario "user with discounted-amount subscription views account page" do
     user = create(:user, stripe_customer_id: "1234")
     subscriptions_reponse = generate_subscriptions_response([
       discounted_amount_subscription_response,
+    ])
+    stub_customer_find_request_with_subscriptions(
+      user.stripe_customer_id,
+      subscriptions_reponse,
+    )
+
+    sign_in_as(user)
+    visit account_path
+
+    expect(page).to have_text("$500")
+    expect(page).to have_text("Bulk - Yearly")
+    expect(page).to have_text("$250/mo")
+  end
+
+  scenario "user with discounted-percentage subscription views account page" do
+    user = create(:user, stripe_customer_id: "1234")
+    subscriptions_reponse = generate_subscriptions_response([
       discounted_percent_subscription_response,
     ])
     stub_customer_find_request_with_subscriptions(
@@ -66,10 +73,7 @@ feature "Account" do
     sign_in_as(user)
     visit account_path
 
-    expect(page).to have_text("$700")
-    expect(page).to have_text("Bulk - Yearly")
-    expect(page).to have_text("$250/mo")
-    expect(page).to have_text("$500") # 2x Bulk - Yearly subscription
+    expect(page).to have_text("$200")
     expect(page).to have_text("Bulk - Monthly")
     expect(page).to have_text("$200/mo")
   end

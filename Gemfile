@@ -44,10 +44,10 @@ group :staging, :production do
 end
 
 group :development, :test do
-  gem "byebug"
   gem "dotenv-rails"
   gem "foreman"
   gem "jasmine-rails"
+  gem "pry-byebug"
   gem "rspec-rails", ">= 3.4"
   gem "bundler-audit", require: false
   gem "quiet_assets"

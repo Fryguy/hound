@@ -14,7 +14,7 @@ describe RepoSubscriber do
           stub_customer_find_request
           update_request = stub_customer_update_request
           subscription_request = stub_subscription_create_request(
-            plan: repo.plan_type,
+            plan: user.next_tier,
             repo_ids: repo.id,
           )
 
@@ -63,7 +63,7 @@ describe RepoSubscriber do
         user = create(:user, repos: [repo], stripe_customer_id: "",)
         customer_request = stub_customer_create_request(user)
         subscription_request = stub_subscription_create_request(
-          plan: repo.plan_type,
+          plan: user.next_tier,
           repo_ids: repo.id,
         )
 
@@ -82,7 +82,7 @@ describe RepoSubscriber do
         repo = create(:repo)
         user = create(:user, repos: [repo])
         stub_customer_create_request(user)
-        stub_failed_subscription_create_request(repo.plan_type)
+        stub_failed_subscription_create_request(user.next_tier)
 
         result = RepoSubscriber.subscribe(repo, user, "cardtoken")
 
@@ -93,7 +93,7 @@ describe RepoSubscriber do
         repo = build_stubbed(:repo)
         user = create(:user)
         stub_customer_create_request(user)
-        stub_failed_subscription_create_request(repo.plan_type)
+        stub_failed_subscription_create_request(user.next_tier)
         allow(Raven).to receive(:capture_exception)
 
         RepoSubscriber.subscribe(repo, user, "cardtoken")
@@ -108,7 +108,7 @@ describe RepoSubscriber do
         user = create(:user, repos: [repo])
         stub_customer_create_request(user)
         stub_subscription_create_request(
-          plan: repo.plan_type,
+          plan: user.next_tier,
           repo_ids: repo.id,
         )
         stripe_delete_request = stub_subscription_delete_request

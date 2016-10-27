@@ -5,6 +5,7 @@ describe SubscriptionsController, "#create" do
     it "subscribes the user to the repo" do
       repo = create(:repo, private: true)
       membership = create(:membership, repo: repo)
+      create(:subscription, repo: repo, user: membership.user)
       activator = double(:repo_activator, activate: true)
       allow(RepoActivator).to receive(:new).and_return(activator)
       allow(RepoSubscriber).to receive(:subscribe).and_return(true)
@@ -50,6 +51,7 @@ describe SubscriptionsController, "#create" do
     it "deactivates repo" do
       membership = create(:membership)
       repo = membership.repo
+      create(:subscription, repo: repo, user: membership.user)
       activator = double(:repo_activator, activate: true, deactivate: nil)
       allow(RepoActivator).to receive(:new).and_return(activator)
       allow(RepoSubscriber).to receive(:subscribe).and_return(false)
@@ -59,6 +61,18 @@ describe SubscriptionsController, "#create" do
 
       expect(response.code).to eq "502"
       expect(activator).to have_received(:deactivate)
+    end
+  end
+
+  context "when the current tier is full" do
+    it "notifies that payment is required" do
+      repo = create(:repo, private: true)
+      membership = create(:membership, repo: repo)
+
+      stub_sign_in(membership.user)
+      post :create, repo_id: repo.id, format: :json
+
+      expect(response).to have_http_status(:payment_required)
     end
   end
 end

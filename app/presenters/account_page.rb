@@ -1,23 +1,21 @@
 class AccountPage
   include ActionView::Helpers::NumberHelper
 
-  attr_reader :billable_email, :repos, :subscriptions
+  attr_reader :billable_email, :repos, :subscription
 
-  def initialize(repos:, billable_email:, payment_gateway_subscriptions:)
+  def initialize(repos:, billable_email:, subscription:)
     @billable_email = billable_email
     @repos = repos
-    @subscriptions = payment_gateway_subscriptions
+    @subscription = subscription
   end
 
-  def monthly_line_items
-    @monthly_line_items ||= @subscriptions.map do |subscription|
-      MonthlyLineItem.new(subscription)
-    end
+  def monthly_line_item
+    MonthlyLineItem.new(subscription)
   end
 
   def total_monthly_cost
     number_to_currency(
-      monthly_line_items.sum(&:subtotal_in_dollars),
+      monthly_line_item.subtotal_in_dollars,
       precision: 0
     )
   end

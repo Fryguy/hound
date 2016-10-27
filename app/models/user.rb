@@ -11,6 +11,10 @@ class User < ActiveRecord::Base
 
   before_create :generate_remember_token
 
+  def next_tier
+    tier.next
+  end
+
   def to_s
     username
   end
@@ -51,8 +55,8 @@ class User < ActiveRecord::Base
     end
   end
 
-  def payment_gateway_subscriptions
-    @payment_gateway_subscriptions ||= payment_gateway_customer.subscriptions
+  def payment_gateway_subscription
+    @payment_gateway_subscription ||= payment_gateway_customer.subscription
   end
 
   def repos_by_activation_ability
@@ -71,6 +75,10 @@ class User < ActiveRecord::Base
 
   def payment_gateway_customer
     @payment_gateway_customer ||= PaymentGatewayCustomer.new(self)
+  end
+
+  def tier
+    Tier.new(self)
   end
 
   def generate_remember_token

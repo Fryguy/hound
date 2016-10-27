@@ -6,6 +6,18 @@ describe User do
   it { should validate_presence_of :username }
   it { should have_many(:memberships).dependent(:destroy) }
 
+  describe "#next_tier" do
+    it "returns the next tier identifier" do
+      user = build(:user)
+      id = "NEXT_TIER_ID"
+      tier = instance_double(Tier, next: id)
+
+      allow(Tier).to receive(:new).once.with(user).and_return(tier)
+
+      expect(user.next_tier).to eq id
+    end
+  end
+
   describe "#subscribed_repos" do
     it "returns subscribed repos" do
       user = create(:user)
@@ -145,6 +157,22 @@ describe User do
 
         expect(user).not_to have_access_to_private_repos
       end
+    end
+  end
+
+  describe "#payment_gateway_subscription" do
+    it "returns the subscriptions for the payment gateway customer" do
+      subscription = instance_double(PaymentGatewaySubscription)
+      customer = instance_double(
+        PaymentGatewayCustomer,
+        subscription: subscription,
+      )
+      user = build(:user)
+
+      allow(PaymentGatewayCustomer).to receive(:new).once.with(user).
+        and_return(customer)
+
+      expect(user.payment_gateway_subscription).to eq(subscription)
     end
   end
 end

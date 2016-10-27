@@ -35,6 +35,28 @@ module StripeApiHelper
     )
   end
 
+  def stub_customer_find_request_with_tier2_subscription
+    stub_request(:get, "#{stripe_base_url}/#{stripe_customer_id}").with(
+      headers: { "Authorization" => "Bearer #{ENV['STRIPE_API_KEY']}" }
+    ).to_return(
+      status: 200,
+      body: File.read(
+        "spec/support/fixtures/stripe_customer_find_with_tier2_subscription.json"
+      )
+    )
+  end
+
+  def stub_customer_find_request_with_tier3_subscription
+    stub_request(:get, "#{stripe_base_url}/#{stripe_customer_id}").with(
+      headers: { "Authorization" => "Bearer #{ENV['STRIPE_API_KEY']}" }
+    ).to_return(
+      status: 200,
+      body: File.read(
+        "spec/support/fixtures/stripe_customer_find_with_tier3_subscription.json"
+      )
+    )
+  end
+
   def stub_customer_find_request_with_subscriptions
     stub_request(:get, "#{stripe_base_url}/#{stripe_customer_id}").with(
       headers: { "Authorization" => "Bearer #{ENV['STRIPE_API_KEY']}" }

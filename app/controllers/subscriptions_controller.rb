@@ -5,7 +5,9 @@ class SubscriptionsController < ApplicationController
   before_action :update_email
 
   def create
-    if activator.activate && create_subscription
+    if Tier.new(current_user).full?
+      head 402
+    elsif activator.activate && create_subscription
       render json: repo, status: :created
     else
       activator.deactivate

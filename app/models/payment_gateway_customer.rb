@@ -25,10 +25,8 @@ class PaymentGatewayCustomer
       create_subscription(plan: plan, metadata: { repo_ids: repo_id })
   end
 
-  def subscriptions
-    customer.subscriptions.map do |subscription|
-      PaymentGatewaySubscription.new(subscription)
-    end
+  def subscription
+    subscriptions.first || NoSubscription.new
   end
 
   def retrieve_subscription(stripe_subscription_id)
@@ -64,6 +62,12 @@ class PaymentGatewayCustomer
       BlankCard.new
   end
 
+  def subscriptions
+    customer.subscriptions.map do |subscription|
+      PaymentGatewaySubscription.new(subscription)
+    end
+  end
+
   class NoRecord
     def email
       ""
@@ -87,8 +91,24 @@ class PaymentGatewayCustomer
       []
     end
 
+    def discount
+      NoDiscount.new
+    end
+
     def map
       []
+    end
+
+    def plan_amount
+      0
+    end
+
+    def plan_name
+      "basic"
+    end
+
+    def quantity
+      1
     end
   end
 
