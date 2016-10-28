@@ -18,6 +18,8 @@ import ReposView from './components/repos_view';
 import TierChangeNotifier from './components/tier_change_notifier';
 import TierPlan from './components/tier_plan';
 
+import Ajax from './lib/ajax';
+
 // Setup a global app scope
 const app = window.app = global.app = {};
 
@@ -41,3 +43,5 @@ app.ReposSyncSpinner = ReposSyncSpinner;
 app.ReposView = ReposView;
 app.TierChangeNotifier = TierChangeNotifier;
 app.TierPlan = TierPlan;
+
+app.Ajax = Ajax;
