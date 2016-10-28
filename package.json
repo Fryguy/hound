@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build:dev:client": "node_modules/webpack/bin/webpack.js -w --config webpack.config.js"
+    "build:dev:client": "node_modules/webpack/bin/webpack.js -w --config webpack.config.js",
+    "test": "mocha --compilers jsx:babel-core/register app/assets/javascripts/components/tests/*-test.jsx"
   },
   "engines": {
     "node": "5.10.1",
