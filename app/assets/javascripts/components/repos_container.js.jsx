@@ -4,10 +4,10 @@ class ReposContainer extends React.Component {
       url: "/repos.json",
       type: "GET",
       dataType: "json",
-      success: (data) => {
+      success: data => {
         this.onFetchReposAndOrgsSuccess(data);
       },
-      error: (error) => {
+      error: () => {
         alert("Your repos failed to load.");
       }
     });
@@ -19,7 +19,7 @@ class ReposContainer extends React.Component {
     } else {
       this.setState({repos: data});
 
-      organizations = data.map( (repo) => {
+      organizations = data.map( repo => {
         return (repo.owner || {
           name: this.orgName(repo.name)
         });
@@ -103,7 +103,7 @@ class ReposContainer extends React.Component {
       repo.active = false;
       repo.stripe_subscription_id = null;
       this.commitRepoToState(repo);
-    }).catch( (error) => {
+    }).catch( () => {
       alert("Your repo could not be disabled.");
     });
   }
@@ -112,7 +112,7 @@ class ReposContainer extends React.Component {
     this.deactivateRepo(repo).then( () => {
       repo.active = false;
       this.commitRepoToState(repo);
-    }).catch( (error) => {
+    }).catch( () => {
       alert("Your repo could not be disabled.");
     });
   }
@@ -131,48 +131,49 @@ class ReposContainer extends React.Component {
   activateAndTrackRepoSubscription(repo, stripeSubscriptionId) {
     repo.active = true;
     repo.stripe_subscription_id = stripeSubscriptionId;
-    this.track_repo_activated(repo);
+    this.trackRepoActivated(repo);
 
     this.commitRepoToState(repo);
   }
 
+  onSubscriptionError(repo, error) {
+    if (error.status === 402) {
+      document.location.href = `/pricing?repo_id=${repo.id}`;
+    } else {
+      alert("Your subscription could not be activated.");
+    }
+  }
+
   createSubscriptionWithExistingCard(repo) {
-    this.createSubscription(
-      { repo_id: repo.id}
-    ).then( (resp) => {
+    this.createSubscription({
+      repo_id: repo.id
+    }).then( resp => {
       this.activateAndTrackRepoSubscription(
         repo, resp.stripe_subscription_id
       );
-
-    }).catch( (error) => {
-      alert("Your subscription could not be activated.");
-    });
+    }).catch( error => this.onSubscriptionError(repo, error));
   }
 
   createSubscriptionWithNewCard(repo, stripeToken) {
-    this.createSubscription(
-      {
-        repo_id: repo.id,
-        card_token: stripeToken.id,
-        email_address: stripeToken.email
-      }
-    ).then( (resp) => {
+    this.createSubscription({
+      repo_id: repo.id,
+      card_token: stripeToken.id,
+      email_address: stripeToken.email
+    }).then( resp => {
       this.activateAndTrackRepoSubscription(
         repo, resp.stripe_subscription_id
       );
-    }).catch( (error) => {
-      alert("Your subscription could not be activated.");
-    });
+    }).catch( error => this.onSubscriptionError(repo, error));
   }
 
   activateFreeRepo(repo) {
     this.activateRepo(
       repo
-    ).then( (resp) => {
+    ).then( resp => {
       repo.active = true;
-      this.track_repo_activated(repo);
+      this.trackRepoActivated(repo);
       this.commitRepoToState(repo);
-    }).catch( (error) => {
+    }).catch( () => {
       alert("Your repo could not be enabled.");
     });
   }
@@ -201,7 +202,7 @@ class ReposContainer extends React.Component {
   showCreditCardForm(options, successCallback) {
     StripeCheckout.configure({
       key: Hound.settings.stripePublishableKey,
-      image: "<%= image_path('icon.svg') %>",
+      image: Hound.settings.iconPath,
       token: successCallback
     }).open({
       name: options.full_plan_name,
@@ -217,7 +218,7 @@ class ReposContainer extends React.Component {
       url: "/user.json",
       type: "GET",
       dataType: "json",
-      success: (data) => {
+      success: data => {
         if (data.refreshing_repos) {
           setTimeout(() => { this.handleSync() }, 1000);
         } else {
@@ -252,7 +253,7 @@ class ReposContainer extends React.Component {
     this.setState({filterTerm: term});
   }
 
-  track_repo_activated(repo) {
+  trackRepoActivated(repo) {
     if (repo.private) {
       var eventName = "Private Repo Activated";
       var price = repo.price_in_dollars;
