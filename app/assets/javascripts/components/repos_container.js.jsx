@@ -138,7 +138,7 @@ class ReposContainer extends React.Component {
 
   onSubscriptionError(repo, error) {
     if (error.status === 402) {
-      document.location.href = `/pricing?repo_id=${repo.id}`;
+      document.location.href = `/pricings?repo_id=${repo.id}`;
     } else {
       alert("Your subscription could not be activated.");
     }

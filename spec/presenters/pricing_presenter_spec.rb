@@ -16,6 +16,26 @@ RSpec.describe PricingPresenter do
     end
   end
 
+  describe "#as_json" do
+    it "returns the pricing as a hash" do
+      user = create(:user)
+
+      pricing = Pricing.new(
+        id: "tier1",
+        price: 49,
+        range: 1..4,
+        title: "Chihuahua",
+      )
+      presenter = PricingPresenter.new(pricing: pricing, user: user)
+      expect(presenter.as_json).to eq(
+        current: presenter.current?,
+        name: pricing.title,
+        price: pricing.price,
+        upto: pricing.allowance,
+      )
+    end
+  end
+
   describe "#current?" do
     it "returns true" do
       membership = create(:membership)
@@ -46,6 +66,40 @@ RSpec.describe PricingPresenter do
         )
         presenter = PricingPresenter.new(pricing: pricing, user: user)
         expect(presenter.current?).to be(false)
+      end
+    end
+  end
+
+  describe "#next?" do
+    it "returns true" do
+      membership = create(:membership)
+      user = membership.user
+      create(:subscription, repo: membership.repo, user: user)
+
+      pricing = Pricing.new(
+        id: "tier1",
+        price: 49,
+        range: 1..4,
+        title: "Chihuahua",
+      )
+      presenter = PricingPresenter.new(pricing: pricing, user: user)
+      expect(presenter.next?).to be(true)
+    end
+
+    context "when the pricing does not match the user's next pricing" do
+      it "returns false" do
+        membership = create(:membership)
+        user = membership.user
+        create(:subscription, repo: membership.repo, user: user)
+
+        pricing = Pricing.new(
+          id: "tier2",
+          price: 99,
+          range: 5..10,
+          title: "Labrador",
+        )
+        presenter = PricingPresenter.new(pricing: pricing, user: user)
+        expect(presenter.next?).to be(false)
       end
     end
   end
