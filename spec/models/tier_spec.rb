@@ -7,7 +7,7 @@ RSpec.describe Tier do
       repos = double("Repos", count: 1)
       user = double("User", subscribed_repos: repos)
       tier = Tier.new(user)
-      expect(tier.current).to eq(Tier::TIER1_ID)
+      expect(tier.current.id).to eq(Tier::TIER1_ID)
     end
   end
 
@@ -42,7 +42,7 @@ RSpec.describe Tier do
         repos = double("Repos", count: 0)
         user = double("User", subscribed_repos: repos)
         tier = Tier.new(user)
-        expect(tier.next).to eq(Tier::TIER1_ID)
+        expect(tier.next.id).to eq(Tier::TIER1_ID)
       end
     end
 
@@ -51,7 +51,7 @@ RSpec.describe Tier do
         repos = double("Repos", count: 4)
         user = double("User", subscribed_repos: repos)
         tier = Tier.new(user)
-        expect(tier.next).to eq(Tier::TIER2_ID)
+        expect(tier.next.id).to eq(Tier::TIER2_ID)
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe Tier do
         repos = double("Repos", count: 10)
         user = double("User", subscribed_repos: repos)
         tier = Tier.new(user)
-        expect(tier.next).to eq(Tier::TIER3_ID)
+        expect(tier.next.id).to eq(Tier::TIER3_ID)
       end
     end
   end

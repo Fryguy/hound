@@ -1,0 +1,30 @@
+<div>
+  <section class="tier-change-container">
+    <aside class="tier-change-plans">
+      <h3>Plans</h3>
+
+      <% @pricings.each do |pricing| %>
+        <div class="plan plan-vertical current">
+          <% if pricing.current? %>
+            <div class="marker-wrapper">
+              <span class="current-plan">Current Plan</span>
+            </div>
+          <% end %>
+
+          <div class="plan-divider">
+            <h5 class="plan-title"><%= pricing.title %></h5>
+
+            <div class="plan-allowance">
+              Up to <strong><%= pricing.allowance %></strong> Repos
+            </div>
+          </div>
+
+          <div class="plan-price">
+            <%= number_to_currency(pricing.price, precision: 0) %>
+            <small>month</small>
+          </div>
+        </div>
+      <% end %>
+    </aside>
+  </section>
+</div>

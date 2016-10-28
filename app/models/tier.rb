@@ -1,3 +1,5 @@
+require "./app/models/pricing"
+
 class Tier
   BULK_ID = "bulk".freeze
   TIER1_ID = "tier1".freeze
@@ -35,11 +37,7 @@ class Tier
   end
 
   def select(count)
-    TIERS.each do |range, id|
-      return id if range.include?(count)
-    end
-
-    BULK_ID
+    Pricing.where(count: count).first || BULK_ID
   end
 
   def succ
