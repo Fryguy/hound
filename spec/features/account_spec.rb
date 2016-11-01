@@ -32,7 +32,7 @@ feature "Account" do
     within(plans[0]) do
       expect(page).to have_content("CURRENT PLAN")
 
-      expect(find(".plan-title").text).to eq "Puppy"
+      expect(find(".plan-title").text).to eq "Hound"
       expect(find(".plan-allowance").text).to eq "Up to 0 Repos"
       expect(find(".plan-price").text).to eq "$0 month"
     end

@@ -12,7 +12,7 @@ RSpec.describe Pricing do
       expect(pricing.allowance).to eq 0
       expect(pricing.id).to eq "basic"
       expect(pricing.price).to eq 0
-      expect(pricing.title).to eq "Puppy"
+      expect(pricing.title).to eq "Hound"
 
       pricing = pricings[1]
       expect(pricing.allowance).to eq 4
