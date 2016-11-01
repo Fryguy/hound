@@ -38,8 +38,6 @@ feature "Account" do
     end
 
     within(plans[1]) do
-      expect(page).to have_content("NEW PLAN")
-
       expect(find(".plan-title").text).to eq "Chihuahua"
       expect(find(".plan-allowance").text).to eq "Up to 4 Repos"
       expect(find(".plan-price").text).to eq "$49 month"

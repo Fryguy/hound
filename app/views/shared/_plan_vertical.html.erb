@@ -1,12 +1,7 @@
-<div class="plan plan-vertical <%= current ? 'current' : '' %> <%= new ? 'new' : '' %>">
+<div class="plan plan-vertical <%= current ? 'current' : '' %>">
   <% if current %>
     <div class="marker-wrapper">
       <span class="current-plan">Current Plan</span>
-    </div>
-  <% end %>
-  <% if new %>
-    <div class="marker-wrapper">
-      <span class="new-plan">New Plan</span>
     </div>
   <% end %>
   <div class="plan-divider">
