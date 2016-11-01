@@ -49,7 +49,10 @@
               <%= @account_page.remaining %>
             </td>
             <td>
-              <%= @account_page.monthly_line_item.subtotal %>
+              <%= number_to_currency(
+                @account_page.monthly_line_item.subtotal_in_dollars,
+                precision: 0,
+              ) %>
             </td>
           </tr>
         </tbody>

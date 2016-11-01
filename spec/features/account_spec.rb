@@ -94,7 +94,7 @@ feature "Account" do
       expect(page).to have_text("Chihuahua")
       expect(page).to have_text(4)
       expect(page).to have_text(3)
-      expect(page).to have_text("$500")
+      expect(page).to have_text("$250")
     end
   end
 
