@@ -16,14 +16,31 @@ RSpec.describe AccountPage do
 
   describe "#monthly_line_item" do
     it "returns the subscription as a monthly line item" do
-      user = create(:user)
-      subscription = instance_double(PaymentGatewaySubscription)
+      user = double("User")
+      subscription = double("PaymentGatewaySubscription")
       page = AccountPage.new(user)
 
       allow(user).to receive(:payment_gateway_subscription).once.with(no_args).
         and_return(subscription)
 
       expect(page.monthly_line_item).to eq MonthlyLineItem.new(subscription)
+    end
+  end
+
+  describe "#pricings" do
+    it "returns all of the presentable, available pricings" do
+      presenter = instance_double(PricingPresenter)
+      pricing = instance_double(Pricing)
+      user = double("User")
+      page = AccountPage.new(user)
+
+      allow(Pricing).to receive(:all).once.with(no_args).and_return([pricing])
+      allow(PricingPresenter).to receive(:new).once.with(
+        pricing: pricing,
+        user: user,
+      ).and_return(presenter)
+
+      expect(page.pricings).to eq [presenter]
     end
   end
 

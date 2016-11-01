@@ -11,6 +11,12 @@ class AccountPage
     MonthlyLineItem.new(subscription)
   end
 
+  def pricings
+    Pricing.all.map do |pricing|
+      PricingPresenter.new(pricing: pricing, user: user)
+    end
+  end
+
   def repos
     subscribed_repos.order(:name)
   end
