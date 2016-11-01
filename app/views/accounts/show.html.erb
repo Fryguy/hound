@@ -55,7 +55,10 @@
             </th>
             <th class="total-amount">
               <label>
-                <%= @account_page.total_monthly_cost %>
+                <%= number_to_currency(
+                  @account_page.total_monthly_cost,
+                  precision: 0,
+                ) %>
               </label>
             </th>
           </tr>
