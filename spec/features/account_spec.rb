@@ -59,61 +59,66 @@ feature "Account" do
   end
 
   scenario "user with a subscription views account page" do
-    user = create(:user, stripe_customer_id: "1234")
-    subscriptions_response = generate_subscriptions_response([
-      individual_subscription_response,
-    ])
+    user = create(:user, stripe_customer_id: stripe_customer_id)
+    create(:subscription, user: user)
+
+    responses = [individual_subscription_response]
     stub_customer_find_request_with_subscriptions(
-      user.stripe_customer_id,
-      subscriptions_response,
+      stripe_customer_id,
+      generate_subscriptions_response(responses),
     )
-    individual_repo = create(:repo, users: [user])
-    create(:subscription, repo: individual_repo, user: user, price: 9)
-    public_repo = create(:repo, users: [user])
 
     sign_in_as(user)
     visit account_path
 
-    expect(page).to have_text("$9")
-    expect(page).to have_text("Personal")
-    expect(page).to have_text(individual_repo.name)
-    expect(page).not_to have_text(public_repo.name)
+    within(".itemized-receipt") do
+      expect(page).to have_text("Chihuahua")
+      expect(page).to have_text(4)
+      expect(page).to have_text(3)
+      expect(page).to have_text("$49")
+    end
   end
 
   scenario "user with discounted-amount subscription views account page" do
-    user = create(:user, stripe_customer_id: "1234")
-    subscriptions_reponse = generate_subscriptions_response([
-      discounted_amount_subscription_response,
-    ])
+    user = create(:user, stripe_customer_id: stripe_customer_id)
+    create(:subscription, user: user)
+
+    responses = [discounted_amount_subscription_response]
     stub_customer_find_request_with_subscriptions(
-      user.stripe_customer_id,
-      subscriptions_reponse,
+      stripe_customer_id,
+      generate_subscriptions_response(responses),
     )
 
     sign_in_as(user)
     visit account_path
 
-    expect(page).to have_text("$500")
-    expect(page).to have_text("Bulk - Yearly")
-    expect(page).to have_text("$250/mo")
+    within(".itemized-receipt") do
+      expect(page).to have_text("Chihuahua")
+      expect(page).to have_text(4)
+      expect(page).to have_text(3)
+      expect(page).to have_text("$500")
+    end
   end
 
   scenario "user with discounted-percentage subscription views account page" do
-    user = create(:user, stripe_customer_id: "1234")
-    subscriptions_reponse = generate_subscriptions_response([
-      discounted_percent_subscription_response,
-    ])
+    user = create(:user, stripe_customer_id: stripe_customer_id)
+    create(:subscription, user: user)
+
+    responses = [discounted_percent_subscription_response]
     stub_customer_find_request_with_subscriptions(
-      user.stripe_customer_id,
-      subscriptions_reponse,
+      stripe_customer_id,
+      generate_subscriptions_response(responses),
     )
 
     sign_in_as(user)
     visit account_path
 
-    expect(page).to have_text("$200")
-    expect(page).to have_text("Bulk - Monthly")
-    expect(page).to have_text("$200/mo")
+    within(".itemized-receipt") do
+      expect(page).to have_text("Chihuahua")
+      expect(page).to have_text(4)
+      expect(page).to have_text(3)
+      expect(page).to have_text("$200")
+    end
   end
 
   scenario "user sees paid repo usage" do

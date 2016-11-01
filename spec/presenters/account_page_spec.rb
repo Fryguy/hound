@@ -1,6 +1,23 @@
 require "rails_helper"
 
 RSpec.describe AccountPage do
+  describe "#allowance" do
+    it "returns the allowance of the current tier" do
+      allowance = 10
+      pricing = double("Pricing")
+      tier = instance_double(Tier)
+      user = double("User")
+      page = AccountPage.new(user)
+
+      allow(Tier).to receive(:new).once.with(user).and_return(tier)
+      allow(pricing).to receive(:allowance).once.with(no_args).
+        and_return(allowance)
+      allow(tier).to receive(:current).once.with(no_args).and_return(pricing)
+
+      expect(page.allowance).to eq allowance
+    end
+  end
+
   describe "#billable_email" do
     it "returns the user's billable email" do
       billable_email = "somebody@example.com"
@@ -27,6 +44,22 @@ RSpec.describe AccountPage do
     end
   end
 
+  describe "#plan" do
+    it "returns the name of the current tier" do
+      plan = "Chihuahua"
+      pricing = double("Pricing")
+      tier = instance_double(Tier)
+      user = double("User")
+      page = AccountPage.new(user)
+
+      allow(Tier).to receive(:new).once.with(user).and_return(tier)
+      allow(pricing).to receive(:title).once.with(no_args).and_return(plan)
+      allow(tier).to receive(:current).once.with(no_args).and_return(pricing)
+
+      expect(page.plan).to eq plan
+    end
+  end
+
   describe "#pricings" do
     it "returns all of the presentable, available pricings" do
       presenter = instance_double(PricingPresenter)
@@ -41,6 +74,26 @@ RSpec.describe AccountPage do
       ).and_return(presenter)
 
       expect(page.pricings).to eq [presenter]
+    end
+  end
+
+  describe "#remaining" do
+    it "returns the number of remaining repos available in the current tier" do
+      pricing = double("Pricing")
+      remaining = 9
+      repos = double("Repo")
+      tier = instance_double(Tier)
+      user = double("User")
+      page = AccountPage.new(user)
+
+      allow(Tier).to receive(:new).once.with(user).and_return(tier)
+      allow(pricing).to receive(:allowance).once.with(no_args).and_return(10)
+      allow(repos).to receive(:count).once.with(no_args).and_return(1)
+      allow(tier).to receive(:current).once.with(no_args).and_return(pricing)
+      allow(user).to receive(:subscribed_repos).once.with(no_args).
+        and_return(repos)
+
+      expect(page.remaining).to eq remaining
     end
   end
 

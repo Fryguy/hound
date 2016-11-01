@@ -3,6 +3,10 @@ class AccountPage
     @user = user
   end
 
+  def allowance
+    current_tier.allowance
+  end
+
   def billable_email
     user.billable_email
   end
@@ -11,10 +15,18 @@ class AccountPage
     MonthlyLineItem.new(subscription)
   end
 
+  def plan
+    current_tier.title
+  end
+
   def pricings
     Pricing.all.map do |pricing|
       PricingPresenter.new(pricing: pricing, user: user)
     end
+  end
+
+  def remaining
+    allowance - repo_count
   end
 
   def repos
@@ -33,7 +45,19 @@ class AccountPage
 
   attr_reader :user
 
+  def current_tier
+    tier.current
+  end
+
+  def repo_count
+    subscribed_repos.count
+  end
+
   def subscribed_repos
     user.subscribed_repos
+  end
+
+  def tier
+    Tier.new(user)
   end
 end

@@ -32,21 +32,21 @@
         <thead>
           <tr>
             <th>Plan</th>
-            <th>Base Cost</th>
-            <th>Quantity</th>
+            <th>Allowance</th>
+            <th>Remaining</th>
             <th>Subtotal</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>
-              <%= @account_page.monthly_line_item.title %>
+              <%= @account_page.plan %>
             </td>
             <td>
-              <%= @account_page.monthly_line_item.base_price %>
+              <%= @account_page.allowance %>
             </td>
             <td>
-              <%= @account_page.monthly_line_item.quantity %>
+              <%= @account_page.remaining %>
             </td>
             <td>
               <%= @account_page.monthly_line_item.subtotal %>
